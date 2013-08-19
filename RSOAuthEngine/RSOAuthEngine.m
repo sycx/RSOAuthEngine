@@ -358,13 +358,18 @@ static const NSString *oauthSignatureMethodName[] = {
     [self setOAuthValue:nil forKey:@"oauth_verifier"];
 }
 
+- (NSString *)generateOAuthNonceString
+{
+    return [NSString uniqueString];
+}
+
 - (void)signRequest:(MKNetworkOperation *)request
 {
     NSAssert(_oAuthValues && self.consumerKey && self.consumerSecret, @"Please use an initializer with Consumer Key and Consumer Secret.");
 
     // Generate timestamp and nonce values
     [self setOAuthValue:[NSString stringWithFormat:@"%ld", time(NULL)] forKey:@"oauth_timestamp"];
-    [self setOAuthValue:[NSString uniqueString] forKey:@"oauth_nonce"];
+    [self setOAuthValue:[self generateOAuthNonceString] forKey:@"oauth_nonce"];
     
     // Construct the signature base string
     NSString *baseString = [self signatureBaseStringForRequest:request];
